@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { 
 getAuth,
@@ -74,9 +74,9 @@ window.registerUser = function(){
 }
 
 onAuthStateChanged(auth, (user) => {
-if(user){
-window.location.href = "dashboard.html";
-}
+    if (user && !window.location.pathname.includes("forgot-password")) {
+        window.location.href = "dashboard.html";
+    }
 });
 
 window.sendReset = function() {

@@ -24,15 +24,15 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
-onAuthStateChanged(auth,(user)=>{
-    if(!user){
-        window.location.href="index.html";
+onAuthStateChanged(auth, (user) => {
+    if (!user) {
+        window.location.href = "index.html";
     } else {
         document.getElementById("userEmail").innerText = user.email;
+        lucide.createIcons();
+        loadCalendars();
     }
 });
-
-lucide.createIcons();
 
 window.logoutUser = function(){
 signOut(auth).then(()=>{
@@ -92,7 +92,5 @@ div.onclick = () => {
 
 list.appendChild(div);
 });
-lucide.createIcons();    
+lucide.createIcons();
 }
-
-setTimeout(loadCalendars,500);

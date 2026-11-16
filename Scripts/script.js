@@ -1,11 +1,25 @@
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-  getStorage,
-  ref,
-  uploadString,
-  getDownloadURL
-} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
-import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-const storage = getStorage();
+  getFirestore,
+  doc,
+  setDoc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyDJIec8d-Iyg7fzShmmt4f45jLpfbRsoG8",
+    authDomain: "arcs-amalius-calendar-sy-c9bf2.firebaseapp.com",
+    projectId: "arcs-amalius-calendar-sy-c9bf2",
+    storageBucket: "arcs-amalius-calendar-sy-c9bf2.firebasestorage.app",
+    messagingSenderId: "922200770812",
+    appId: "1:922200770812:web:98778d9e336f58e331af79"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 const params = new URLSearchParams(window.location.search);
 const calendarId = params.get("id");
 
@@ -466,20 +480,14 @@ generateCalendar(currentYear);
 // SAUVEGARDE CLOUD
 // ===============================
 
-function cloudSaveEvents() {
-
+async function cloudSaveEvents() {
     const user = auth.currentUser;
-
     if (!user) return;
 
-    db.collection("calendars")
-    .doc(user.uid)
-    .set({
+    await setDoc(doc(db, "calendars", calendarId || user.uid), {
         events: events
-    })
-    .then(() => {
-        console.log("Calendrier sauvegardé cloud");
-    });
+    }, { merge: true });
+    console.log("Calendrier sauvegardé cloud");
 }
 
 
@@ -487,29 +495,19 @@ function cloudSaveEvents() {
 // CHARGEMENT CLOUD
 // ===============================
 
-function cloudLoadEvents() {
-
+async function cloudLoadEvents() {
     const user = auth.currentUser;
-
     if (!user) return;
 
-    db.collection("calendars")
-    .doc(user.uid)
-    .get()
-    .then(doc => {
+    const docRef = doc(db, "calendars", calendarId || user.uid);
+    const docSnap = await getDoc(docRef);
 
-        if (doc.exists) {
-
-            events = doc.data().events || [];
-
-            saveEvents();
-            renderEventsList();
-            generateCalendar(currentYear);
-
-        }
-
-    });
-
+    if (docSnap.exists()) {
+        events = docSnap.data().events || [];
+        saveEvents();
+        renderEventsList();
+        generateCalendar(currentYear);
+    }
 }
 
 
@@ -529,8 +527,6 @@ function autoCloudSync() {
 // ===============================
 // 🔥 PREVIEW OPTIMISÉE BASE64
 // ===============================
-
-import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 // 🔹 Génère une miniature légère
 async function generateOptimizedPreview() {
@@ -597,22 +593,11 @@ async function savePreview(calendarId) {
 // DETECTION CONNEXION
 // ===============================
 
-if (typeof firebase !== "undefined") {
-
-    auth.onAuthStateChanged(user => {
-
-        if (user) {
-
-            console.log("Utilisateur connecté :", user.email);
-            cloudLoadEvents();
-
-        } else {
-
-            console.log("Utilisateur non connecté");
-
-        }
-
-    });
-
-}
-console.log("Firebase connecté");
+onAuthStateChanged(auth, user => {
+    if (user) {
+        console.log("Utilisateur connecté :", user.email);
+        cloudLoadEvents();
+    } else {
+        console.log("Utilisateur non connecté");
+    }
+});
