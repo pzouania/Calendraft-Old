@@ -99,6 +99,21 @@
         </div>
     </div>
 
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        const app = initializeApp({
+            apiKey: "AIzaSyDJIec8d-Iyg7fzShmmt4f45jLpfbRsoG8",
+            authDomain: "arcs-amalius-calendar-sy-c9bf2.firebaseapp.com",
+            projectId: "arcs-amalius-calendar-sy-c9bf2",
+            storageBucket: "arcs-amalius-calendar-sy-c9bf2.firebasestorage.app",
+            messagingSenderId: "922200770812",
+            appId: "1:922200770812:web:98778d9e336f58e331af79"
+        });
+        onAuthStateChanged(getAuth(app), user => {
+            if (!user) window.location.href = "index.html";
+        });
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="module" src="Scripts/script.js"></script>
