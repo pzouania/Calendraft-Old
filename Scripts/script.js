@@ -540,7 +540,7 @@ async function generateOptimizedPreview() {
     }
 
     const canvas = await html2canvas(element, {
-        scale: 0.3, // 🔥 réduction massive
+        scale: 1,
         backgroundColor: "#ffffff",
         useCORS: true
     });
@@ -549,16 +549,16 @@ async function generateOptimizedPreview() {
     const smallCanvas = document.createElement("canvas");
     const ctx = smallCanvas.getContext("2d");
 
-    const width = 300;
-    const height = canvas.height * (300 / canvas.width);
+    const width = 600;
+    const height = Math.round(canvas.height * (600 / canvas.width));
 
     smallCanvas.width = width;
     smallCanvas.height = height;
 
     ctx.drawImage(canvas, 0, 0, width, height);
 
-    // 🔥 compression JPEG
-    return smallCanvas.toDataURL("image/jpeg", 0.5);
+    // compression JPEG
+    return smallCanvas.toDataURL("image/jpeg", 0.8);
 }
 
 
