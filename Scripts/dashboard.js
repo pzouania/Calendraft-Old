@@ -54,6 +54,15 @@ const docRef = await addDoc(collection(db,"calendars"),{
 window.location.href = "editor.html?id="+docRef.id;
 }
 
+function formatDate(ts) {
+    if (!ts) return "aujourd'hui";
+    const d = ts.toDate ? ts.toDate() : new Date(ts);
+    const diff = Math.floor((Date.now() - d) / 86400000);
+    if (diff === 0) return "aujourd'hui";
+    if (diff === 1) return "il y a 1 jour";
+    return `il y a ${diff} jours`;
+}
+
 async function loadCalendars(){
 const user = auth.currentUser;
 const q = query(
@@ -76,13 +85,12 @@ const div = document.createElement("div");
 div.classList.add("calendar-card");
 
 div.innerHTML = `
-    <div class="card-top"></div>
-        <div class="card-top-image">
-            <img src="${data.preview || 'image/default-preview.png'}" alt="Aperçu calendrier" />
-        </div>
+    <div class="card-top-image">
+        <img src="${data.preview || 'image/default-preview.png'}" alt="Aperçu calendrier" />
+    </div>
     <div class="card-content">
         <div class="card-title">${data.name}</div>
-        <div class="card-date">Modifié aujourd'hui</div>
+        <div class="card-date">Modifié ${formatDate(data.updated)}</div>
     </div>
 `;
 
