@@ -520,6 +520,7 @@ function autoCloudSync() {
     if (!auth || !auth.currentUser) return;
 
     cloudSaveEvents();
+    if (calendarId) savePreview(calendarId);
 
 }
 
